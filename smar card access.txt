@@ -1,0 +1,1270 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading.Tasks;
+using System.Transactions;
+using System.Xml.Linq;
+
+namespace UMLproject
+{
+    [Serializable]
+    public class Card
+    {
+        // Properties with public getters and private setters
+        private string number = "";
+        private int Balance = 0;
+        private bool IsActive = false;
+        private string UserID = "";
+        private string Type = "";
+
+        // Default constructor
+        public string Number
+        {
+            get { return number; }
+            set { number = value; }
+        }
+        public int balance
+        {
+            get { return Balance; }
+            set { Balance = value; }
+        }
+        public bool isActive
+        {
+            get { return IsActive; }
+            set { IsActive = value; }
+        }
+        public string userID
+        {
+            get { return UserID; }
+            set { UserID = value; }
+        }
+        public string type
+        {
+            get { return Type; }
+            set { Type = value; }
+        }
+        public Card()
+        {
+            number = "";
+            Balance = 0;
+            IsActive = false;
+            UserID = "";
+            Type = "Unknown";
+        }
+
+        // Constructor with parameters
+        public Card(string number, string userID, string type)
+        {
+            this.number = number;
+            UserID = userID;
+            Type = type;
+            Balance = 50;
+            IsActive = true;
+        }
+        public Card(string number,int balance, string type, bool status ,string userID)
+        {
+            this.number = number;
+            UserID = userID;
+            Type = type;
+            Balance = balance;
+            IsActive = status;
+        }
+        // Method to add money to the card
+        public void AddMoney(int amount)
+        {
+            Balance += amount;
+        }
+
+        // Method to deduct money from the card
+        public bool DeductMoney(int amount)
+        {
+            if (amount > 0 && Balance >= amount)
+            {
+                Balance -= amount;
+                return true;
+            }
+            return false;
+        }
+
+        // Method to activate the card
+        public void Activate()
+        {
+            IsActive = true;
+        }
+
+        // Method to deactivate the card
+        public void Deactivate()
+        {
+            IsActive = false;
+        }
+
+        // Method to get card information
+        public void GetCardInfo()
+        {
+            Console.WriteLine("\nCard Number:   "+ Number + ", Type: " + Type + ", Balance: " + Balance + ", Active:" + IsActive + ", UserID:" + UserID);
+        }
+    }
+
+    [Serializable]
+    class Perosn
+    {
+        // Private fields
+        private string name;
+        private string id;
+        private string[] courses = new string[100];
+        private string type;
+        private int length = 0;
+
+        // Properties
+        public bool Valid_Course_ID (string courses_id)
+        {
+            for(int i = 0; i < courses.Length;i++)
+            {
+                if(courses[i] == courses_id)
+                    return true;
+            }
+            return false;
+        }
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+        public string ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        public string[] Courses
+        {
+            get { return courses; }
+            set
+            {
+                if (value != null && value.Length <= 100)
+                {
+                    courses = value;
+                }
+            }
+        }
+        public void Print_Courses ()
+        {
+            for (int i = 0; i < courses.Length; i++) 
+                Console.WriteLine( (i+1) + ") " +courses[i]);
+        }
+
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        // Constructors
+        public Perosn()
+        {
+            name = "";
+            id = "";
+            courses = new string[100];
+            type = "";
+        }
+
+        public Perosn(string name, string id, string type)
+        {
+            Name = name;
+            ID = id;
+            Type = type;
+        }
+        public void Add_Course(string name)
+        {
+            courses[length++] = name;
+        }
+    }
+
+
+    [Serializable]
+    class Transactions
+    {
+        private string iD = "";
+        private string cardNumber = "";
+        private string type = ""; // {recharge, attendance or payment}
+        private int amount = 0;
+
+        // Properties with corrected naming
+        public string ID
+        {
+            get { return iD; }
+            set { iD = value; }
+        }
+
+        public string CardNumber
+        {
+            get { return cardNumber; }
+            set { cardNumber = value; }
+        }
+
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        public int Amount
+        {
+            get { return amount; }
+            set { amount = value; }
+        }
+
+        // Default constructor
+        public Transactions()
+        {
+            ID = "";
+            CardNumber = "";
+            Type = "";
+            Amount = 0;
+        }
+
+        // Parameterized constructor
+        public Transactions(string id, string cardNumber, int amount, string type)
+        {
+            ID = id;
+            CardNumber = cardNumber;
+            Type = type;
+            Amount = amount;
+        }
+        public void print()
+        {
+            Console.WriteLine("transaction ID : " + iD +"\ntransaction cardnumber : " + cardNumber + "\nntransaction type : " + type + "\n transaction Amount : " + amount);
+        }
+    }
+
+    [Serializable]
+    class Attendance
+    {
+        // Private fields
+        private int dateDay = 0;
+        private int dateMonth = 0;
+        private int dateYear = 0;
+        private string courseId = "";
+        private string[] attendes= new string[100];
+
+        public Attendance(int day, int month, int year, string courseId)
+        {
+            dateDay = day;
+            dateMonth = month;
+            dateYear = year;
+            this.courseId = courseId;
+        }
+        public void print ()
+        {
+            Console.WriteLine("The attendes of this course are : " + courseId);
+            for (int i = 0; i < attendes.Length; i++)
+            {
+                Console.WriteLine(i+1 + ") "+attendes[i]);
+            }
+        }
+        public void Add_to_attendes (string name)
+        {
+            attendes[attendes.Length] = name;
+        }
+
+        // Properties
+        public int DateDay
+        {
+            get { return dateDay; }
+            set { dateDay = value; }
+        }
+
+        public int DateMonth
+        {
+            get { return dateMonth; }
+            set { dateMonth = value; }
+        }
+
+        public int DateYear
+        {
+            get { return dateYear; }
+            set { dateYear = value; }
+        }
+
+        public string CourseId
+        {
+            get { return courseId; }
+            set { courseId = value; }
+        }
+    }
+
+    class main_Prog
+    {
+        Perosn[] ArrPerson = new Perosn[1000];
+        Card[] ArrCard = new Card[1000];
+        Transactions[] ArrTransactions = new Transactions[1000];
+        Attendance[] ArrAttendances = new Attendance[1000];
+        int Counter_perosn = 0, Counter_Card = 0, Counter_Transactions = 0, Counter_Attendances = 0;
+
+        public main_Prog()
+        {
+        }
+        public void Recharge_card(string User_id)
+        {   
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].userID == User_id)
+                {
+                    Console.Write("please Enter the amount you want to recharge your account with : ");
+                    int x = Convert.ToInt32(Console.ReadLine());
+                    ArrCard[i].AddMoney(x);
+                    Console.WriteLine("\npayment succesfully your new balance : " + ArrCard[i].balance);
+                    string ID = "";
+                    while (ID == "")
+                    {
+                        Console.Write("\nPlease enter transaction ID : ");
+                        ID = Console.ReadLine();
+                        for (int j = 0; j < Counter_Transactions; j++)
+                        {
+                            if (ArrTransactions[j].ID == ID)
+                            {
+                                Console.WriteLine("\n\nThis Id has been taken please try new ID : " + ID);
+                                ID = "";
+                            }
+                        }
+                    }
+                    ArrTransactions[Counter_Transactions++] = new Transactions(ID, ArrCard[i].userID,x , "recharge");
+                }
+            }
+            Save();
+        }
+        public void Record_lecture_attendance(string User_id)
+        {
+            Console.WriteLine("\n***********************************************************");
+            bool flag = false;
+            string Course_ID = "";
+            while (!flag) ;
+            {
+                for (int i = 0; i < Counter_perosn; i++)
+                {
+                    if (ArrPerson[i].ID == User_id)
+                    {
+                        ArrPerson[i].Print_Courses();
+                    }
+                }
+                Console.WriteLine("\n***********************************************************");
+                Console.Write("please Enter course ID :  ");
+                Course_ID = Console.ReadLine();
+                for (int i = 0; i < Counter_perosn; i++)
+                {
+                    if (ArrPerson[i].ID == User_id)
+                    {
+                        bool found = true;
+                        found = ArrPerson[i].Valid_Course_ID(Course_ID);
+                        if (found)
+                        {
+                            flag = true;
+                            int day=0 , month =0 , year =0;
+                            Console.Write("please Enter Attendance day (1-30):  ");
+                            day = Convert.ToInt32(Console.ReadLine());
+                            Console.Write("please Enter Attendance month (1-12):  ");
+                            month = Convert.ToInt32(Console.ReadLine());
+                            Console.Write("please Enter Attendance year:  ");
+                            year = Convert.ToInt32(Console.ReadLine());
+                            string Card_ID = "", tras_ID= "";
+                            for (int x = 0; x < Counter_Card; x++)
+                            {
+                                if (ArrCard[x].userID == User_id)
+                                    Card_ID = ArrCard[x].Number;
+                            }
+                            for (int x = 0 ; x < Counter_Attendances; x++)
+                            {
+                                if (ArrAttendances[x].DateDay == day && ArrAttendances[x].DateMonth == month && ArrAttendances[x].DateYear == year && ArrAttendances[x].CourseId == Course_ID)
+                                {
+                                    ArrAttendances[x].Add_to_attendes(ArrPerson[i].ID);
+                                    Console.Write("************************************************************************");
+                                    Console.Write("\n\n           done\n\n");
+                                    Console.WriteLine("************************************************************************");
+                                    x = Counter_Attendances;
+                                    while (tras_ID == "")
+                                    {
+                                        Console.Write("\nPlease enter transaction ID : ");
+                                        tras_ID = Console.ReadLine();
+                                        for (int z = 0; z < Counter_Transactions; z++)
+                                        {
+                                            if (ArrTransactions[z].ID == tras_ID)
+                                            {
+                                                Console.WriteLine("\n\nThis Id has been taken please try new ID : " + tras_ID);
+                                                tras_ID = "";
+                                            }
+                                        }
+                                    }
+                                    ArrTransactions[Counter_Transactions++] = new Transactions(tras_ID , Card_ID, 0, "attendance");
+                                }
+                                else if (Counter_Attendances-1 == x)
+                                {
+                                    while (tras_ID == "")
+                                    {
+                                        Console.Write("\nPlease enter transaction ID : ");
+                                        tras_ID = Console.ReadLine();
+                                        for (int z = 0; z < Counter_Transactions; z++)
+                                        {
+                                            if (ArrTransactions[z].ID == tras_ID)
+                                            {
+                                                Console.WriteLine("\n\nThis Id has been taken please try new ID : " + tras_ID);
+                                                tras_ID = "";
+                                            }
+                                        }
+                                    }
+                                    ArrTransactions[Counter_Transactions++] = new Transactions(tras_ID, Card_ID, 0, "attendance");
+                                    ArrAttendances[Counter_Attendances] = new Attendance(day, month, year, Course_ID);
+                                    ArrAttendances[Counter_Attendances++].Add_to_attendes(ArrPerson[i].ID);
+                                    Console.Write("************************************************************************");
+                                    Console.Write("\n\n           done\n\n");
+                                    Console.WriteLine("************************************************************************");
+                                }
+                            }
+                            if (Counter_Attendances == 0)
+                            {
+                                while (tras_ID == "")
+                                {
+                                    Console.Write("\nPlease enter transaction ID : ");
+                                    tras_ID = Console.ReadLine();
+                                    for (int z = 0; z < Counter_Transactions; z++)
+                                    {
+                                        if (ArrTransactions[z].ID == tras_ID)
+                                        {
+                                            Console.WriteLine("\n\nThis Id has been taken please try new ID : " + tras_ID);
+                                            tras_ID = "";
+                                        }
+                                    }
+                                }
+                                ArrTransactions[Counter_Transactions++] = new Transactions(tras_ID, Card_ID, 0, "attendance");
+
+                                ArrAttendances[Counter_Attendances] = new Attendance(day, month, year, Course_ID);
+                                ArrAttendances[Counter_Attendances++].Add_to_attendes(ArrPerson[i].ID);
+
+                                Console.Write("************************************************************************");
+                                Console.Write("\n\n           done\n\n");
+                                Console.WriteLine("************************************************************************");
+                            }
+                                
+                        }
+                        else
+                        {
+                            Console.Write("************************************************************************");
+                            Console.Write("\n\n             Invalid course ID please choose from the course IDs desplayed\n\n");
+                            Console.WriteLine("************************************************************************");
+                        }
+
+                    }
+                }
+            }
+
+            Save();
+            Console.WriteLine("\n***********************************************************");
+        }
+        public void Pay_for_cafeteria(string User_id)
+        {
+            int sum = 0 ;
+            int count_Steak = 0;
+            int count_Soup = 0;
+            int count_Sandwich = 0;
+            int count_Salad = 0;
+            int count_Tea = 0;
+            int count_Juice = 0;
+            int count_Cake = 0;
+            int count_Water = 0;
+            bool flag = true;
+
+            while (flag)
+            {
+                Console.WriteLine("\n***********************************************************");
+                Console.WriteLine("1) Steak    price(8JD)");
+                Console.WriteLine("2) Soup     price(2JD)");
+                Console.WriteLine("3) Sandwich price(3JD)");
+                Console.WriteLine("4) Salad    price(4JD)");
+                Console.WriteLine("5) Tea      price(2JD)");
+                Console.WriteLine("6) Juice    price(3JD)");
+                Console.WriteLine("7) Steak    price(5JD)");
+                Console.WriteLine("8) Water    price(1JD)");
+                Console.WriteLine("0) To Exit");
+                Console.WriteLine("***********************************************************");
+                string choice = "";
+                Console.Write("please Enter you want to add to the cart :  ");
+                choice = Console.ReadLine();
+                if (choice == "1") { count_Steak++; }
+                else if (choice == "2") { count_Soup++; }
+                else if (choice == "3") { count_Sandwich++; }
+                else if (choice == "4") { count_Salad++; }
+                else if (choice == "5") { count_Tea++; }
+                else if (choice == "6") { count_Juice++; }
+                else if (choice == "7") { count_Cake++; }
+                else if (choice == "8") { count_Water++; }
+                else if (choice == "0") { flag = false; }
+                else
+                {
+                    Console.Write("************************************************************************");
+                    Console.Write("\n\n             Invalid Input please enter a number between (0-8)\n\n");
+                    Console.WriteLine("************************************************************************");
+                }
+            }
+            sum = count_Steak * 8 + count_Soup * 2 + count_Sandwich * 3 + count_Salad * 4 + count_Tea * 2 + count_Juice * 3 + count_Cake * 5 + count_Water * 1;
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (User_id == ArrCard[i].userID)
+                {
+                    i = Counter_Card;
+                    if (ArrCard[i].balance >= sum)
+                    {
+                        string tras_ID = "";
+                        while (tras_ID == "")
+                        {
+                            Console.Write("\nPlease enter transaction ID : ");
+                            tras_ID = Console.ReadLine();
+                            for (int z = 0; z < Counter_Transactions; z++)
+                            {
+                                if (ArrTransactions[z].ID == tras_ID)
+                                {
+                                    Console.WriteLine("\n\nThis Id has been taken please try new ID : " + tras_ID);
+                                    tras_ID = "";
+                                }
+                            }
+                        }
+                        ArrTransactions[Counter_Transactions++] = new Transactions(tras_ID, ArrCard[i].Number, sum, "attendance");
+                        ArrCard[i].DeductMoney(sum);
+                    }
+                    else
+                    {
+                        Console.Write("************************************************************************");
+                        Console.Write("\n\n             معكيش فلوس يا حلاوة معكيش فلووووس\n\n");
+                        Console.WriteLine("************************************************************************");
+                    }
+                }
+            }
+            Save();
+        }
+        public void Pay_for_bus_ride(string User_id)
+        {
+            int sum = 0;
+            bool flag = true;
+
+            while (flag)
+            {
+                Console.WriteLine("\n***********************************************************");
+                Console.WriteLine("1) Northern buildings     price(3JD)");
+                Console.WriteLine("2) Southern buildings     price(4JD)");
+                Console.WriteLine("3) Library                price(5JD)");
+                Console.WriteLine("0) To Exit");
+                Console.WriteLine("***********************************************************");
+                string choice = "";
+                Console.Write("please Enter select one track for each time :  ");
+                choice = Console.ReadLine();
+                if (choice == "1") { sum += 3; flag = false; }
+                else if (choice == "2") { sum += 4; flag = false; }
+                else if (choice == "3") { sum += 5; flag = false; }
+                else if (choice == "0") { flag = false; }
+                else
+                {
+                    Console.Write("************************************************************************");
+                    Console.Write("\n\n             Invalid Input please enter a number between (0-3)\n\n");
+                    Console.WriteLine("************************************************************************");
+                }
+            }
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (User_id == ArrCard[i].userID)
+                {
+                    i = Counter_Card;
+                    if (ArrCard[i].balance >= sum)
+                    {
+                        string tras_ID = "";
+                        while (tras_ID == "")
+                        {
+                            Console.Write("\nPlease enter transaction ID : ");
+                            tras_ID = Console.ReadLine();
+                            for (int z = 0; z < Counter_Transactions; z++)
+                            {
+                                if (ArrTransactions[z].ID == tras_ID)
+                                {
+                                    Console.WriteLine("\n\nThis Id has been taken please try new ID : " + tras_ID);
+                                    tras_ID = "";
+                                }
+                            }
+                        }
+                        ArrTransactions[Counter_Transactions++] = new Transactions(tras_ID, ArrCard[i].Number, sum, "attendance");
+                        ArrCard[i].DeductMoney(sum);
+                    }
+                    else
+                    {
+                        Console.Write("************************************************************************");
+                        Console.Write("\n\n             معكيش فلوس يا حلاوة معكيش فلووووس\n\n");
+                        Console.WriteLine("************************************************************************");
+                    }
+                }
+            }
+            Save();
+        }
+        public void View_transaction_history(string User_id)
+        {
+            for (int j = 0; j < Counter_Card;j++)
+            {
+                if (ArrCard[j].userID == User_id)
+                {
+                    Console.WriteLine("***************************payment****************************************");
+                    for (int i = 0; i < Counter_Transactions; i++)
+                    {
+                        if (ArrTransactions[i].Type == "payment" && ArrTransactions[i].CardNumber == ArrCard[j].userID)
+                            ArrTransactions[i].print();
+                    }
+                    Console.WriteLine("****************************attendance***************************************");
+                    for (int i = 0; i < Counter_Transactions; i++)
+                    {
+                        if (ArrTransactions[i].Type == "attendance" && ArrTransactions[i].CardNumber == ArrCard[j].userID)
+                            ArrTransactions[i].print();
+                    }
+                    Console.WriteLine("***************************recharge****************************************");
+                    for (int i = 0; i < Counter_Transactions; i++)
+                    {
+                        if (ArrTransactions[i].Type == "recharge" && ArrTransactions[i].CardNumber == ArrCard[j].userID)
+                            ArrTransactions[i].print();
+                    }
+                    Console.WriteLine("*******************************************************************");
+                    break;
+                }
+                else if (ArrCard[j].userID != User_id && j == Counter_Card - 1)
+                {
+                    Console.Write("***********************************************************");
+                    Console.Write("\n\n              This user got no card \n\n");
+                    Console.WriteLine("***********************************************************");
+                }    
+            }
+            
+        }
+        public void Access_car_parking(string User_id)
+        {
+            int sum = 0;
+            bool flag = true;
+
+            while (flag)
+            {
+                Console.WriteLine("\n***********************************************************");
+                Console.WriteLine("1) 1hour                 price(5JD)");
+                Console.WriteLine("2) 2hours                price(9JD)");
+                Console.WriteLine("3) 3hours                price(12JD)");
+                Console.WriteLine("4) 4hours                price(14JD)");
+                Console.WriteLine("5) 5hours                price(15JD)");
+                Console.WriteLine("6) more than 5 hours     price(15JD)");
+                Console.WriteLine("0) To Exit");
+                Console.WriteLine("***********************************************************");
+                string choice = "";
+                Console.Write("please Enter select one track for each time :  ");
+                choice = Console.ReadLine();
+                if (choice == "1") { sum += 5; flag = false; }
+                else if (choice == "2") { sum += 9; flag = false; }
+                else if (choice == "3") { sum += 12; flag = false; }
+                else if (choice == "4") { sum += 14; flag = false; }
+                else if (choice == "5") { sum += 15; flag = false; }
+                else if (choice == "6") { sum += 15; flag = false; }
+                else if (choice == "0") { flag = false; }
+                else
+                {
+                    Console.Write("************************************************************************");
+                    Console.Write("\n\n             Invalid Input please enter a number between (0-6)\n\n");
+                    Console.WriteLine("************************************************************************");
+                }
+            }
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (User_id == ArrCard[i].userID)
+                {
+                    i = Counter_Card;
+                    if (ArrCard[i].balance >= sum)
+                    {
+                        string tras_ID = "";
+                        while (tras_ID == "")
+                        {
+                            Console.Write("\nPlease enter transaction ID : ");
+                            tras_ID = Console.ReadLine();
+                            for (int z = 0; z < Counter_Transactions; z++)
+                            {
+                                if (ArrTransactions[z].ID == tras_ID)
+                                {
+                                    Console.WriteLine("\n\nThis Id has been taken please try new ID : " + tras_ID);
+                                    tras_ID = "";
+                                }
+                            }
+                        }
+                        ArrTransactions[Counter_Transactions++] = new Transactions(tras_ID, ArrCard[i].Number, sum, "attendance");
+                        ArrCard[i].DeductMoney(sum);
+                    }
+                    else
+                    {
+                        Console.Write("************************************************************************");
+                        Console.Write("\n\n             معكيش فلوس يا حلاوة معكيش فلووووس\n\n");
+                        Console.WriteLine("************************************************************************");
+                    }
+                }
+            }
+            Save();
+        }
+        public void Generate_attendance_report(string User_id)
+        {
+            Console.WriteLine("\n***********************************************************");
+            bool flag = false;
+            string Course_ID = "";
+            while (!flag) ;
+            {
+                for (int i = 0; i < Counter_perosn; i++)
+                {
+                    if (ArrPerson[i].ID == User_id)
+                    {
+                        ArrPerson[i].Print_Courses();
+                    }
+                }
+                Console.WriteLine("\n***********************************************************");
+                Console.Write("please Enter course ID :  ");
+                Course_ID = Console.ReadLine();
+                for (int i = 0; i < Counter_perosn; i++)
+                {
+                    if (ArrPerson[i].ID == User_id)
+                    {
+                        bool found = true;
+                        found = ArrPerson[i].Valid_Course_ID(Course_ID);
+                        if (found)
+                        {
+                            flag = true;
+                            int day = 0, month = 0, year = 0;
+                            Console.Write("please Enter Attendance day (1-30):  ");
+                            day = Convert.ToInt32(Console.ReadLine());
+                            Console.Write("please Enter Attendance month (1-12):  ");
+                            month = Convert.ToInt32(Console.ReadLine());
+                            Console.Write("please Enter Attendance year:  ");
+                            year = Convert.ToInt32(Console.ReadLine());
+
+                            for(int g = 0 ; g < Counter_Attendances; g++)
+                            {
+                                if (ArrAttendances[g].DateDay == day && ArrAttendances[g].DateMonth == month && ArrAttendances[g].DateDay == year && ArrAttendances[g].CourseId == Course_ID)
+                                {
+                                    ArrAttendances[g].print();
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            Console.Write("************************************************************************");
+                            Console.Write("\n\n             Invalid course ID please choose from the course IDs desplayed\n\n");
+                            Console.WriteLine("************************************************************************");
+                        }
+
+                    }
+                }
+            }
+        }
+        public void Issue_card()
+        {
+            Console.WriteLine("***********************************************************");
+            string Number = "";
+            bool flag = true;
+            while (flag)
+            {
+                Console.Write("please Enter the card number (should be unique) : ");
+                Number = Console.ReadLine();
+                for (int i = 0; i < Counter_Card; i++)
+                {
+                    if (ArrCard[i].Number == Number)
+                    {
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n              This card number is used!! Try another one \n\n");
+                        Console.WriteLine("***********************************************************");
+                        Number = "";
+                        i = Counter_Card;
+                    }
+                }
+                if (Number != "")
+                    flag = false;
+
+            }
+            string userID = "";
+            while (!flag)
+            {
+                Console.WriteLine("please Enter the user ID : ");
+                userID = Console.ReadLine();
+                for (int i = 0; i < Counter_perosn; i++)
+                {
+                    if (ArrPerson[i].ID == userID) 
+                    {
+                        flag = true;
+                    }
+                    else if (ArrPerson[i].ID != userID && i == Counter_perosn - 1)
+                    {
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n              Invalid userID \n\n");
+                        Console.WriteLine("***********************************************************");
+                    }
+                }
+            }
+            string Type = "";
+            while(flag)
+            {
+                Console.WriteLine("please Enter the card Type (student or faculty) : ");
+                Type = Console.ReadLine();
+                if (Type == "student" || Type == "faculty")
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.Write("***********************************************************");
+                    Console.Write("\n\n             Invalid Input\n\n");
+                    Console.WriteLine("***********************************************************");
+                }
+            }
+            Console.WriteLine("***********************************************************");
+            ArrCard[Counter_Card++] = new Card(Number, userID, Type);
+            Console.WriteLine("***********************************************************");
+            Save();
+        }
+        public void Block_card()
+        {
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].type == "faculty" && ArrCard[i].isActive == true)
+                    ArrCard[i].GetCardInfo();
+            }
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].type == "student" && ArrCard[i].isActive == true)
+                    ArrCard[i].GetCardInfo();
+            }
+            bool flag = true;
+            string x = "";
+            while (flag)
+            {
+                Console.Write("please Enter the card number you want to (Block) : ");
+                x = Console.ReadLine();
+                for (int i = 0; i < Counter_Card; i++)
+                {
+                    if (ArrCard[i].isActive == true && ArrCard[i].Number == x)
+                    {
+                        ArrCard[i].Deactivate();
+                        flag = false;
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n              This card has been Activated \n\n");
+                        Console.WriteLine("***********************************************************");
+                        i = Counter_Card;
+                    }
+                    else if (ArrCard[i].isActive == false && ArrCard[i].Number == x)
+                    {
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n              This card is already Blocked\n\n");
+                        Console.WriteLine("***********************************************************");
+                        i = Counter_Card;
+                    }
+                    else if (i == (Counter_Card - 1) && ArrCard[i].Number != x)
+                    {
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n             Invalid card number\n\n");
+                        Console.WriteLine("***********************************************************");
+                    }
+                }
+            }
+        }
+        public void Unblock_card()
+        {
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].type == "faculty" && ArrCard[i].isActive == false)
+                    ArrCard[i].GetCardInfo();
+            }
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].type == "student" && ArrCard[i].isActive == false)
+                    ArrCard[i].GetCardInfo();
+            }
+            bool flag = true;
+            string x = "";
+            while (flag)
+            {
+                Console.Write("please Enter the card number you want to (UnBlock) : ");
+                x = Console.ReadLine();
+                for (int i = 0; i < Counter_Card; i++)
+                {
+                    if (ArrCard[i].isActive == false && ArrCard[i].Number == x)
+                    {
+                        ArrCard[i].Activate();
+                        flag = false;
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n              This card has been Activated \n\n");
+                        Console.WriteLine("***********************************************************");
+                        i = Counter_Card;
+                    }
+                    else if (ArrCard[i].isActive == true && ArrCard[i].Number == x)
+                    {
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n              This card is already Active\n\n");
+                        Console.WriteLine("***********************************************************");
+                        i = Counter_Card;
+                    }
+                    else if (i == (Counter_Card - 1) && ArrCard[i].Number != x)
+                    {
+                        Console.Write("***********************************************************");
+                        Console.Write("\n\n             Invalid card number\n\n");
+                        Console.WriteLine("***********************************************************");
+                    }
+                }
+            }
+        }
+        public void View_all_cards()
+        {
+            Console.WriteLine("***************************faculty********************************");
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].type == "faculty")
+                    ArrCard[i].GetCardInfo();
+            }
+            Console.WriteLine("**************************students*********************************");
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].type == "student")
+                    ArrCard[i].GetCardInfo();
+            }
+            Console.WriteLine("*******************************************************************");
+        }
+        public void View_all_transactions()
+        {
+            Console.WriteLine("***************************payment****************************************");
+            for (int i = 0; i < Counter_Transactions; i++)
+            {
+                if (ArrTransactions[i].Type == "payment")
+                    ArrTransactions[i].print();
+            }
+            Console.WriteLine("****************************attendance***************************************");
+            for (int i = 0; i < Counter_Transactions; i++)
+            {
+                if (ArrTransactions[i].Type == "attendance")
+                    ArrTransactions[i].print();
+            }
+            Console.WriteLine("***************************recharge****************************************");
+            for (int i = 0; i < Counter_Transactions; i++)
+            {
+                if (ArrTransactions[i].Type == "recharge")
+                    ArrTransactions[i].print();
+            }
+            Console.WriteLine("*******************************************************************");
+        }
+        public void Load()
+        {
+            /*
+            FileStream fs0 = new FileStream("Persons.txt", FileMode.Open, FileAccess.Read);
+            int count = 0;
+            BinaryFormatter bf = new BinaryFormatter();
+    
+            while (fs0.Position < fs0.Length)
+             {
+                ArrPerson[count++] = (Perosn)bf.Deserialize(fs0);
+             }
+            fs0.Close();
+            Counter_perosn = count;
+
+            FileStream fs1 = new FileStream("Card.txt", FileMode.Open, FileAccess.Read);
+            BinaryFormatter bf1 = new BinaryFormatter();
+            count = 0;
+            while (fs1.Position < fs1.Length)
+            {
+                ArrCard[count++] = (Card)bf1.Deserialize(fs1);
+            }
+            fs1.Close();
+            Counter_Card = count;
+
+            FileStream fs2 = new FileStream("Transactions.txt", FileMode.Open, FileAccess.Read);
+            BinaryFormatter bf2 = new BinaryFormatter();
+            count = 0;
+            while (fs2.Position < fs2.Length)
+            {
+                ArrTransactions[count++] = (Transactions)bf2.Deserialize(fs2);
+            }
+             fs2.Close();
+            Counter_Transactions = count;
+
+            FileStream fs3 = new FileStream("Attendance.txt", FileMode.Open, FileAccess.Read);
+            BinaryFormatter bf3 = new BinaryFormatter();
+            count = 0;
+            while (fs3.Position < fs3.Length)
+            {
+                ArrAttendances[count++] = (Attendance)bf3.Deserialize(fs3);
+            }
+            fs3.Close();
+            Counter_Transactions = count;
+            */
+        }
+        public void Save()
+        {
+            /*
+             FileStream fs0 = new FileStream("Persons.txt", FileMode.Create, FileAccess.Write);
+             BinaryFormatter bf = new BinaryFormatter();
+             for (int i = 0; i < Counter_perosn; i++)
+             {
+                bf.Serialize(fs0, ArrPerson[i]);
+             }
+            fs0.Close();
+
+            FileStream fs1 = new FileStream("Card.txt", FileMode.Create, FileAccess.Write);
+            BinaryFormatter bf1 = new BinaryFormatter();
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                bf1.Serialize(fs1, ArrCard[i]);
+            }
+            fs1.Close();
+
+            FileStream fs2 = new FileStream("Transactions.txt", FileMode.Create, FileAccess.Write);
+            BinaryFormatter bf2 = new BinaryFormatter();
+            for (int i = 0; i < Counter_Transactions; i++)
+            {
+                bf2.Serialize(fs2, ArrTransactions[i]);
+            }
+            fs2.Close();
+
+            FileStream fs3 = new FileStream("Attendances.txt", FileMode.Create, FileAccess.Write);
+            BinaryFormatter bf3 = new BinaryFormatter();
+            for (int i = 0; i < Counter_Attendances; i++)
+            {
+                bf3.Serialize(fs3, ArrAttendances[i]);
+            }
+            fs3.Close();
+            */
+        }
+        public bool Valid_stud(string card_num)
+        {
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].Number == card_num && ArrCard[i].type == "student")
+                    return true;
+            }
+            return false;
+        }
+        public bool Valid_Fac(string card_num)
+        {
+            for (int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].Number == card_num && ArrCard[i].type == "faculty")
+                    return true;
+            }
+            return false;
+        }
+        public string Return_User_ID(string number)
+        {
+            for(int i = 0; i < Counter_Card; i++)
+            {
+                if (ArrCard[i].Number == number)
+                    return ArrCard[i].userID;
+            }
+            return "";
+        }
+        public void Def_data()
+        {
+            ArrPerson[0] = new Perosn("Ali", "S01", "student");
+            ArrPerson[0].Add_Course("CPE100");
+            ArrPerson[0].Add_Course("SE400");
+
+            ArrPerson[1] = new Perosn("Omar", "S02", "student");
+            ArrPerson[1].Add_Course("CPE100");
+            ArrPerson[1].Add_Course("NES200");
+
+            ArrPerson[2] = new Perosn("Reem", "S03", "student");
+            ArrPerson[2].Add_Course("NES200");
+            ArrPerson[2].Add_Course("CIS300");
+            ArrPerson[2].Add_Course("SE400");
+
+            ArrPerson[3] = new Perosn("Maher", "S04", "student");
+            ArrPerson[3].Add_Course("CPE100");
+            ArrPerson[3].Add_Course("SE400");
+
+            ArrPerson[4] = new Perosn("Sami", "F01", "faculty");
+            ArrPerson[4].Add_Course("CPE100");
+            ArrPerson[4].Add_Course("SE400");
+
+            ArrPerson[5] = new Perosn("Eman", "F02", "faculty");
+            ArrPerson[5].Add_Course("CPE100");
+            ArrPerson[5].Add_Course("NES200");
+            Counter_perosn = 6;
+
+            ArrCard[0] = new Card("10" , 80 , "faculty" , false , "F02");
+
+            ArrCard[1] = new Card("20", 110, "student", false, "S02");
+
+            ArrCard[2] = new Card("30", 95, "student", true, "S03");
+
+            ArrCard[3] = new Card("40", 160, "student", false, "S04");
+            Counter_Card = 4;
+
+        }
+    }
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            main_Prog prog = new main_Prog();
+            prog.Load();
+            prog.Def_data();
+            string Login = "";
+            while (Login != "3")
+            {
+                Console.Write("[1] login As Admin \n[2] Login as Card Holder \n[3] Exit\n\nEnter Your Choice : ");
+                Login = Console.ReadLine();
+                if (Login == "1")
+                {
+                    bool flag = true;
+                    while(flag)
+                    {
+                        Console.WriteLine("\n***********************************************************");
+                        Console.WriteLine("[1] Issue card ");
+                        Console.WriteLine("[2] Block card");
+                        Console.WriteLine("[3] Unblock card");
+                        Console.WriteLine("[4] View all cards");
+                        Console.WriteLine("[5] View all transactions");
+                        Console.WriteLine("[6] Back To Main Login Screen");
+                        Console.WriteLine("***********************************************************");
+                        string choice = "";
+                        Console.Write("Enter your choice: ");
+                        choice = Console.ReadLine();
+                        if (choice == "1") { prog.Issue_card();}
+                        else if (choice == "2") { prog.Block_card();}
+                        else if (choice == "3") { prog.Unblock_card();}
+                        else if (choice == "4") { prog.View_all_cards();}
+                        else if (choice == "5") { prog.View_all_transactions();}
+                        else if (choice == "6") { flag = false; }
+                        else
+                        {
+                            Console.Write("************************************************************************");
+                            Console.Write("\n\n             Invalid Input please enter a number between (1-6)\n\n");
+                            Console.WriteLine("************************************************************************");
+                        }
+                    }
+                }
+                else if (Login == "2")
+                {
+                    bool flag = true;
+                    while (flag)
+                    {
+                        Console.WriteLine("\n***********************************************************");
+                        Console.WriteLine("[1] Login As Student ");
+                        Console.WriteLine("[2] Login as Faculty Member");
+                        Console.WriteLine("[3] Back To Main Login Screen");
+                        Console.WriteLine("***********************************************************");
+                        string choice = "", card_num = "";
+                        Console.Write("Enter your choice: ");
+                        choice = Console.ReadLine();
+                        if (choice == "1")
+                        {
+                            bool c = true;
+                            while(c)
+                            {
+                                Console.WriteLine("Hmm. you're trying to login as student\n\n");
+                                Console.WriteLine("Enter valid card number: ");
+                                card_num = Console.ReadLine();
+                                if (prog.Valid_stud(card_num))
+                                {
+                                    Console.WriteLine("\n***********************************************************");
+                                    Console.WriteLine("[1] Recharge card ");
+                                    Console.WriteLine("[2] Record lecture attendance");
+                                    Console.WriteLine("[3] Pay for cafeteria");
+                                    Console.WriteLine("[4] Pay for bus ride");
+                                    Console.WriteLine("[5] View transaction history");
+                                    Console.WriteLine("[6] Logout");
+                                    Console.WriteLine("***********************************************************");
+                                    string choice2 = "", userID = "";
+                                    Console.Write("Enter your choice: ");
+                                    choice2 = Console.ReadLine();
+                                    userID = prog.Return_User_ID(card_num);
+                                    if (choice2 == "1") { prog.Recharge_card(userID); }
+                                    else if (choice2 == "2") { prog.Record_lecture_attendance(userID); }
+                                    else if (choice2 == "3") { prog.Pay_for_cafeteria(userID); }
+                                    else if (choice2 == "4") { prog.Pay_for_bus_ride(userID); }
+                                    else if (choice2 == "5") { prog.View_transaction_history(userID); }
+                                    else if (choice2 == "6") { c = false; }
+                                    else
+                                    {
+                                        Console.Write("************************************************************************");
+                                        Console.Write("\n\n             Invalid Input please enter a number between (1-6)\n\n");
+                                        Console.WriteLine("************************************************************************");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Write("************************************************************************");
+                                    Console.Write("\n\n             Invalid card number\n\n");
+                                    Console.WriteLine("************************************************************************");
+                                }
+                            }
+                            
+
+                        }
+                        else if (choice == "2")
+                        {
+                            bool c = true;
+                            while (c)
+                            {
+                                Console.WriteLine("Hmm. you're trying to login as faculty member\n\n");
+                                Console.WriteLine("Enter valid card number: ");
+                                card_num = Console.ReadLine();
+                                if(prog.Valid_Fac(card_num))
+                                {
+                                    Console.WriteLine("\n***********************************************************");
+                                    Console.WriteLine("[1] Recharge card ");
+                                    Console.WriteLine("[2] Access car parking");
+                                    Console.WriteLine("[3] Generate attendance report");
+                                    Console.WriteLine("[4] Logout");
+                                    Console.WriteLine("***********************************************************");
+                                    string choice2 = "", userID = "";
+                                    Console.Write("Enter your choice: ");
+                                    choice2 = Console.ReadLine();
+                                    userID = prog.Return_User_ID(card_num);
+                                    if (choice2 == "1") { prog.Recharge_card(userID);}
+                                    else if (choice2 == "2") { prog.Access_car_parking(userID); }
+                                    else if (choice2 == "3") { prog.Generate_attendance_report(userID); }
+                                    else if (choice2 == "4") { c = false; }
+                                    else
+                                    {
+                                        Console.Write("************************************************************************");
+                                        Console.Write("\n\n             Invalid Input please enter a number between (1-4)\n\n");
+                                        Console.WriteLine("************************************************************************");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Write("************************************************************************");
+                                    Console.Write("\n\n             Invalid card number\n\n");
+                                    Console.WriteLine("************************************************************************");
+                                }
+                            }
+                        }
+                        else if (choice == "3") { flag = false; }
+                        else
+                        {
+                            Console.Write("************************************************************************");
+                            Console.Write("\n\n             Invalid Input please enter a number between (1-3)\n\n");
+                            Console.WriteLine("************************************************************************");
+                        }
+                    }
+                }
+                else if (Login == "3")
+                {
+                    Console.Write("************************************************************************");
+                    Console.Write("\n\n             Good Bye\n\n");
+                    Console.WriteLine("************************************************************************");
+                }
+                else
+                {
+                    Console.Write("************************************************************************");
+                    Console.Write("\n\n             Invalid Input please enter a number between (1-3)\n\n");
+                    Console.WriteLine("************************************************************************");
+                }
+            }
+            prog.Save();
+        }
+    }
+}
